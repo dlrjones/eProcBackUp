@@ -86,7 +86,7 @@ namespace eProcBackUp
         private void btnGo_Click(object sender, EventArgs e)
         {
             string extension = "";
-
+            useHeader1 = false;
             hdrsComplete = false;
             selectedPrefix = cboxPrefix.Text.Trim();
             if (selectedPrefix.Length > 0)

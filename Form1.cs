@@ -25,9 +25,12 @@ namespace eProcBackUp
         private ArrayList ColHeaders = new ArrayList();
         private ArrayList RowData = new ArrayList();
         private SLStyle stylHeader;
+        private SLStyle stylHeader2;
         private SLStyle stylNormal;
-        private string formNmbr = "";        
+        private string formNmbr = "";
+        private string currentFormNmbr = "";
         private string selectedPrefix = "";
+        private string currentPrefix = "";
         private string section = "";
         private string attachmentPath = "";
         private bool hdrsComplete = false;
@@ -40,6 +43,7 @@ namespace eProcBackUp
         private int rowNo = 1;
         private string controls = "";
         private bool printFormNumber = false;
+        private bool useHeader1 = false;
         #endregion
 
         public Form1()
@@ -58,6 +62,9 @@ namespace eProcBackUp
             stylHeader = sld.CreateStyle();
             stylHeader.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent4Color,System.Drawing.Color.White);
             stylHeader.Font.FontColor = System.Drawing.Color.White;
+            stylHeader2 = sld.CreateStyle();
+            stylHeader2.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent2Color, System.Drawing.Color.White);
+            stylHeader2.Font.FontColor = System.Drawing.Color.White;
             stylNormal = sld.CreateStyle();
             stylNormal.Fill.SetPattern(PatternValues.Solid, System.Drawing.Color.White, System.Drawing.Color.White);
             stylNormal.Font.FontColor = System.Drawing.Color.Black;
@@ -79,6 +86,7 @@ namespace eProcBackUp
         private void btnGo_Click(object sender, EventArgs e)
         {
             string extension = "";
+
             hdrsComplete = false;
             selectedPrefix = cboxPrefix.Text.Trim();
             if (selectedPrefix.Length > 0)
@@ -103,6 +111,7 @@ namespace eProcBackUp
         private void Pause()
         {
             btnGo.Text = "running...";
+            btnGo.BackColor = System.Drawing.Color.LightYellow;
             tmrPause.Start();                       
         }
 
@@ -146,8 +155,11 @@ namespace eProcBackUp
                 if (item != section)
                 {
                     field = item.Split("~".ToCharArray());
-                    if(!hdrsComplete)
+                    if (!hdrsComplete)
+                    {
+                        //useHeader1 = !useHeader1;
                         SaveHeaders(field[0]);
+                    }
                     //the last field in the row doesn't have the ~[sedtion ID] terminator so this next line doesn't srip it off.
                     fieldOfOne = field[1].EndsWith(sectionID.ToString()) ? field[1].Remove(field[1].Length - (sectionID.ToString().Length + 1)) : field[1];
                     RowData.Add(fieldOfOne);
@@ -155,6 +167,7 @@ namespace eProcBackUp
             }
             if (!hdrsComplete)
             {
+               // useHeader1 = !useHeader1;
                 hdrColCount = ColHeaders.Count;
                 SetColHeaders();
             }
@@ -179,19 +192,22 @@ namespace eProcBackUp
       
         private void SetColHeaders()
         {
-            int colNo = 0;           
+            int colNo = 1;           
             string extension = "";
             try
             {                //set the col headers
-                if (rowNo == 1)
-                    sld.SetCellValue(rowNo, ++colNo, "FORM NMBR");
-                else
-                    ++colNo;
+                if (entryNumber != currentEntryNum)
+                {
+                    useHeader1 = !useHeader1;  //change the header color
+                }
                 foreach (string colName in ColHeaders)
                 {
                     sld.SetCellValue(rowNo, ++colNo, colName);
                 }
-                sld.SetRowStyle(rowNo, stylHeader);
+                if (useHeader1)
+                    sld.SetRowStyle(rowNo, stylHeader);
+                else
+                    sld.SetRowStyle(rowNo, stylHeader2);
                 hdrsComplete = true;
                 ColHeaders.Clear();
             }
@@ -261,6 +277,7 @@ namespace eProcBackUp
         private void tmrPause_Tick(object sender, EventArgs e)
         {
             btnGo.Text = "Go";
+            btnGo.BackColor = System.Drawing.Color.PaleGreen;
         }
     }
 }

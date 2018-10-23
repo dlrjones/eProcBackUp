@@ -32,6 +32,7 @@ namespace eProcBackUp
         private string selectedPrefix = "";
         private string currentPrefix = "";
         private string section = "";
+        private string sectName = "";
         private string attachmentPath = "";
         private bool hdrsComplete = false;
         private int entryNumber = 0;
@@ -88,6 +89,7 @@ namespace eProcBackUp
             string extension = "";
             useHeader1 = false;
             hdrsComplete = false;
+            currentEntryNum = 0;
             selectedPrefix = cboxPrefix.Text.Trim();
             if (selectedPrefix.Length > 0)
             {
@@ -124,7 +126,7 @@ namespace eProcBackUp
                 sectionID = Convert.ToInt32(drow[2]);
                 sectionOrder = Convert.ToInt32(drow[3]);
                 controls = drow[4].ToString(); //this field gets parsed below
-
+                sectName = drow[5].ToString();
                 if (sectionID != currentSectionID)
                 {
                     currentSectionID = sectionID;
@@ -192,7 +194,7 @@ namespace eProcBackUp
       
         private void SetColHeaders()
         {
-            int colNo = 1;           
+            int colNo = 1;     
             string extension = "";
             try
             {                //set the col headers
@@ -225,8 +227,8 @@ namespace eProcBackUp
         {
             int colNo = 0;            
             rowNo++;
-            if (sectionID == 201)
-                colNo = 0;
+            //if (sectionID == 201)
+            //    colNo = 0;
             try
             {
                 foreach (string item in RowData)
@@ -241,9 +243,14 @@ namespace eProcBackUp
                     }
                     if (colNo == 0)
                     {
-                        sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);
-                        if (printFormNumber) //put FormNumber into col1
+                        sld.SetCellStyle(rowNo, colNo + 1, stylNormal);
+                        sld.SetCellValue(rowNo, colNo + 1, sectName);
+
+                        sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);    //colNo + 1                    
+                        if (printFormNumber)
+                        { //put FormNumber into col1
                             sld.SetCellValue(rowNo - 1, ++colNo, formNmbr);
+                        }
                         else colNo++;
                         if (sld.GetCurrentWorksheetName().Equals("Sheet1"))
                             sld.RenameWorksheet("Sheet1", selectedPrefix);
@@ -278,6 +285,16 @@ namespace eProcBackUp
         {
             btnGo.Text = "Go";
             btnGo.BackColor = System.Drawing.Color.PaleGreen;
+        }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Select an Entry Prefix from the drop list" + Environment.NewLine +
+                            "and click on the GO button. If the list is" + Environment.NewLine +
+                            "empty then there haven't been any eProcessing." + Environment.NewLine +
+                            "forms submitted yet." + Environment.NewLine +
+                            "Follow the link at the bottom of the form to get to the output file.", 
+                            "Using eProcessingBackUp",MessageBoxButtons.OK);
         }
     }
 }

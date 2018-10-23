@@ -89,6 +89,7 @@ namespace eProcBackUp
             BuildSQL("controls");
             GetResults("controls");
         }
+
         public void GetDropList()
         {
             BuildSQL("dropList");
@@ -101,7 +102,7 @@ namespace eProcBackUp
             ODMRequest Request = new ODMRequest();
             Request.ConnectString = connectStr;
             Request.CommandType = CommandType.Text;
-            Request.Command = "Execute ('" + sql + "')";
+            Request.Command = sql;
 
             if (trace)
                 lm.Write("DataSetManager/GetResults:  " + Request.Command);
@@ -126,14 +127,17 @@ namespace eProcBackUp
                     sql = "select DISTINCT EntryPrefix " +
                           "from tblEntries " +
                           "where EntryStatusID = 4 " +
-                          "AND DateEntered >  ''" + dateEntered + "'' ";
+                          "AND DateEntered >  '" + dateEntered + "' ";                   
                     break;
                 case "controls":
-                    sql = "SELECT  EntryID,EntryNumber,SectionID,SectionOrder,Controls " +
+                    sql = "SELECT  EntryID,EntryNumber,tblEntries.SectionID,tblEntries.SectionOrder,Controls, " +
+                          "RIGHT(SectionName, Len(SectionName) " +
+                          "- CHARINDEX(' ',SectionName)) " +
                           "FROM[eProcessing].[dbo].tblEntries " +
+                          "JOIN tblSections on tblSections.SectionID = tblEntries.SectionID " +
                           "WHERE EntryStatusID = " + STATUS_ID + " " +
-                          "AND DateEntered > ''" + dateEntered + "'' " +
-                          "AND EntryPrefix = ''" + prefix + "'' " +
+                          "AND DateEntered > '" + dateEntered + "' " +
+                          "AND EntryPrefix = '" + prefix + "' " +
                           "order by EntryNumber, SectionID ";
                     break;
             }

@@ -35,6 +35,8 @@
             this.btnQuit = new System.Windows.Forms.Button();
             this.lnkOutputPath = new System.Windows.Forms.LinkLabel();
             this.tmrPause = new System.Windows.Forms.Timer(this.components);
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
             // cboxPrefix
@@ -87,14 +89,26 @@
             // 
             // tmrPause
             // 
-            this.tmrPause.Interval = 3000;
+            this.tmrPause.Interval = 2000;
             this.tmrPause.Tick += new System.EventHandler(this.tmrPause_Tick);
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
+            this.pictureBox3.Location = new System.Drawing.Point(111, 98);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(26, 27);
+            this.pictureBox3.TabIndex = 54;
+            this.pictureBox3.TabStop = false;
+            this.pictureBox3.Click += new System.EventHandler(this.pictureBox3_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(248, 222);
+            this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.lnkOutputPath);
             this.Controls.Add(this.btnQuit);
             this.Controls.Add(this.btnGo);
@@ -104,6 +118,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "eProcessing BackUp";
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -116,6 +131,7 @@
         private System.Windows.Forms.Button btnQuit;
         private System.Windows.Forms.LinkLabel lnkOutputPath;
         private System.Windows.Forms.Timer tmrPause;
+        private System.Windows.Forms.PictureBox pictureBox3;
     }
 }
 

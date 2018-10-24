@@ -132,9 +132,11 @@ namespace eProcBackUp
                 case "controls":
                     sql = "SELECT  EntryID,EntryNumber,tblEntries.SectionID,tblEntries.SectionOrder,Controls, " +
                           "RIGHT(SectionName, Len(SectionName) " +
-                          "- CHARINDEX(' ',SectionName)) " +
+                          "- CHARINDEX(' ',SectionName)),FullName, " +
+                          "(SELECT FirstName + '  ' + LastName FROM tblUsersPMM where AMC = Modifier),[Status] " +
                           "FROM[eProcessing].[dbo].tblEntries " +
                           "JOIN tblSections on tblSections.SectionID = tblEntries.SectionID " +
+                          "JOIN tblStatuses on tblStatuses.StatusID = tblEntries.EntryStatusID " +
                           "WHERE EntryStatusID = " + STATUS_ID + " " +
                           "AND DateEntered > '" + dateEntered + "' " +
                           "AND EntryPrefix = '" + prefix + "' " +

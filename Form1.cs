@@ -33,6 +33,9 @@ namespace eProcBackUp
         private string currentPrefix = "";
         private string section = "";
         private string sectName = "";
+        private string fullName = "";
+        private string modName = "";
+        private string status = "";
         private string attachmentPath = "";
         private bool hdrsComplete = false;
         private int entryNumber = 0;
@@ -127,6 +130,9 @@ namespace eProcBackUp
                 sectionOrder = Convert.ToInt32(drow[3]);
                 controls = drow[4].ToString(); //this field gets parsed below
                 sectName = drow[5].ToString();
+                fullName = drow[6].ToString();                            //ADDED 10/24
+                modName = ChangeNullOrEmpty(drow[7].ToString(), fullName); //ADDED 10/24
+                status = drow[8].ToString();                              //ADDED 10/24
                 if (sectionID != currentSectionID)
                 {
                     currentSectionID = sectionID;
@@ -139,6 +145,17 @@ namespace eProcBackUp
                 }
                 ParseControls(controls);                   
             }
+        }
+
+        private string ChangeNullOrEmpty(string strToCheck)
+        {
+            return ChangeNullOrEmpty(strToCheck, "");
+        }
+
+        private string ChangeNullOrEmpty(string strToCheck, string strReplacement)
+        {
+            string rtnString = strToCheck == null ? strReplacement : strToCheck;
+            return rtnString.Length == 0 ? strReplacement : rtnString;
         }
 
         private void ParseControls(string controls)
@@ -194,7 +211,7 @@ namespace eProcBackUp
       
         private void SetColHeaders()
         {
-            int colNo = 1;     
+            int colNo = 3;      //ADDED 10/24 - changed from colNo = 1 to colNo = 3
             string extension = "";
             try
             {                //set the col headers
@@ -225,7 +242,8 @@ namespace eProcBackUp
 
         private void SetRowData(int colCount)
         {
-            int colNo = 0;            
+            int colNo = 0;
+            int startCol = 4;
             rowNo++;
             //if (sectionID == 201)
             //    colNo = 0;
@@ -233,7 +251,8 @@ namespace eProcBackUp
             {
                 foreach (string item in RowData)
                 {                    
-                    if (colNo + 1 > colCount + 1)
+                   // if (colNo + 1 > colCount + 1)
+                    if(colNo + 1 > colCount + startCol)
                         colNo = 0;
                     if (entryNumber != currentEntryNum)
                     {
@@ -246,17 +265,30 @@ namespace eProcBackUp
                         sld.SetCellStyle(rowNo, colNo + 1, stylNormal);
                         sld.SetCellValue(rowNo, colNo + 1, sectName);
 
-                        sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);    //colNo + 1                    
+                        sld.SetCellValue(rowNo - 1, colNo + 2, "Modified By");   //ADDED 10/24
+                        sld.SetCellValue(rowNo, colNo + 2, modName);            //ADDED 10/24
+
+                        sld.SetCellValue(rowNo - 1, colNo + 3, "Status");       //ADDED 10/24
+                        sld.SetCellValue(rowNo, colNo + 3, status);             //ADDED 10/24
+
+                        sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);
                         if (printFormNumber)
                         { //put FormNumber into col1
                             sld.SetCellValue(rowNo - 1, ++colNo, formNmbr);
+                            //colNo = 3;                                          //ADDED 10/24
                         }
-                        else colNo++;
+                        //else colNo = 3;    
+                        colNo = 3;
                         if (sld.GetCurrentWorksheetName().Equals("Sheet1"))
                             sld.RenameWorksheet("Sheet1", selectedPrefix);
                         printFormNumber = false;
+
+                        sld.SetCellValue(rowNo, ++colNo, item);
                     }
-                    sld.SetCellValue(rowNo, ++colNo, item);
+                    else
+                        colNo++;
+
+                    sld.SetCellValue(rowNo, colNo, item);
                 }
             }
             catch (IndexOutOfRangeException ex)

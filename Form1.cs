@@ -68,7 +68,6 @@ namespace eProcBackUp
             stylHeader.Font.FontColor = System.Drawing.Color.White;
             stylHeader2 = sld.CreateStyle();
             stylHeader2.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent2Color, System.Drawing.Color.White);
-            stylHeader2.Font.FontColor = System.Drawing.Color.White;
             stylNormal = sld.CreateStyle();
             stylNormal.Fill.SetPattern(PatternValues.Solid, System.Drawing.Color.White, System.Drawing.Color.White);
             stylNormal.Font.FontColor = System.Drawing.Color.Black;
@@ -79,7 +78,12 @@ namespace eProcBackUp
 
         private void LoadDropList()
         {
-            dm.DateEntered = DateTime.Now.ToShortDateString();
+            // the next four lines are for debug - they get yesterday's forms. When using, comment out the fifth line
+            string day = ((Convert.ToInt32(DateTime.Now.Day)) - 1).ToString();
+            string month = DateTime.Now.Month.ToString();
+            string year = DateTime.Now.Year.ToString();
+            dm.DateEntered = month + "/" + day + "/" + year;
+            //        dm.DateEntered = DateTime.Now.ToShortDateString();
             dm.GetDropList();
             foreach (string prefix in dm.Results)
             {
@@ -130,9 +134,9 @@ namespace eProcBackUp
                 sectionOrder = Convert.ToInt32(drow[3]);
                 controls = drow[4].ToString(); //this field gets parsed below
                 sectName = drow[5].ToString();
-                fullName = drow[6].ToString();                            //ADDED 10/24
-                modName = ChangeNullOrEmpty(drow[7].ToString(), fullName); //ADDED 10/24
-                status = drow[8].ToString();                              //ADDED 10/24
+                fullName = drow[6].ToString();                            
+                modName = ChangeNullOrEmpty(drow[7].ToString(), fullName); 
+                status = drow[8].ToString();                              
                 if (sectionID != currentSectionID)
                 {
                     currentSectionID = sectionID;
@@ -211,13 +215,14 @@ namespace eProcBackUp
       
         private void SetColHeaders()
         {
-            int colNo = 3;      //ADDED 10/24 - changed from colNo = 1 to colNo = 3
+            int colNo = 3;       // changed from colNo = 1 to colNo = 3
             string extension = "";
             try
             {                //set the col headers
                 if (entryNumber != currentEntryNum)
                 {
                     useHeader1 = !useHeader1;  //change the header color
+                    rowNo++; //changing header styles means changing to a new form number so add an extra blank row
                 }
                 foreach (string colName in ColHeaders)
                 {
@@ -245,13 +250,10 @@ namespace eProcBackUp
             int colNo = 0;
             int startCol = 4;
             rowNo++;
-            //if (sectionID == 201)
-            //    colNo = 0;
             try
             {
                 foreach (string item in RowData)
-                {                    
-                   // if (colNo + 1 > colCount + 1)
+                {                                      
                     if(colNo + 1 > colCount + startCol)
                         colNo = 0;
                     if (entryNumber != currentEntryNum)
@@ -265,19 +267,20 @@ namespace eProcBackUp
                         sld.SetCellStyle(rowNo, colNo + 1, stylNormal);
                         sld.SetCellValue(rowNo, colNo + 1, sectName);
 
-                        sld.SetCellValue(rowNo - 1, colNo + 2, "Modified By");   //ADDED 10/24
-                        sld.SetCellValue(rowNo, colNo + 2, modName);            //ADDED 10/24
+                        sld.SetCellValue(rowNo - 1, colNo + 2, "Modified By");   
+                        sld.SetCellValue(rowNo, colNo + 2, modName);            
 
-                        sld.SetCellValue(rowNo - 1, colNo + 3, "Status");       //ADDED 10/24
-                        sld.SetCellValue(rowNo, colNo + 3, status);             //ADDED 10/24
+                        sld.SetCellValue(rowNo - 1, colNo + 3, "Status");       
+                        sld.SetCellValue(rowNo, colNo + 3, status);             
 
                         sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);
                         if (printFormNumber)
                         { //put FormNumber into col1
-                            sld.SetCellValue(rowNo - 1, ++colNo, formNmbr);
-                            //colNo = 3;                                          //ADDED 10/24
-                        }
-                        //else colNo = 3;    
+                            stylNormal.Font.Bold = true;                        
+                            sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal); 
+                            sld.SetCellValue(rowNo - 1, ++colNo, formNmbr);     
+                            stylNormal.Font.Bold = false;
+                        }   
                         colNo = 3;
                         if (sld.GetCurrentWorksheetName().Equals("Sheet1"))
                             sld.RenameWorksheet("Sheet1", selectedPrefix);

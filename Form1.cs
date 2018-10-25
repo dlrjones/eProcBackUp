@@ -64,10 +64,11 @@ namespace eProcBackUp
         private void InitForm()
         {
             stylHeader = sld.CreateStyle();
-            stylHeader.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent4Color,System.Drawing.Color.White);
+            stylHeader.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent4Color,System.Drawing.Color.White);//4  3
             stylHeader.Font.FontColor = System.Drawing.Color.White;
             stylHeader2 = sld.CreateStyle();
-            stylHeader2.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent2Color, System.Drawing.Color.White);
+            stylHeader2.Fill.SetPattern(PatternValues.Solid, SLThemeColorIndexValues.Accent5Color, System.Drawing.Color.White);//2  5
+            stylHeader2.Font.FontColor = System.Drawing.Color.Yellow;
             stylNormal = sld.CreateStyle();
             stylNormal.Fill.SetPattern(PatternValues.Solid, System.Drawing.Color.White, System.Drawing.Color.White);
             stylNormal.Font.FontColor = System.Drawing.Color.Black;
@@ -278,7 +279,7 @@ namespace eProcBackUp
 
                         sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal);
                         if (printFormNumber)
-                        { //put FormNumber into col1
+                        { //put FormNumber into col1 row1
                             stylNormal.Font.Bold = true;                        
                             sld.SetCellStyle(rowNo - 1, colNo + 1, stylNormal); 
                             sld.SetCellValue(rowNo - 1, ++colNo, formNmbr);     

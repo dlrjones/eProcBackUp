@@ -73,17 +73,19 @@ namespace eProcBackUp
             stylNormal.Font.FontColor = System.Drawing.Color.Black;
             stylNormal.SetTopBorder(BorderStyleValues.Thin, System.Drawing.Color.LightGray);
             stylNormal.SetBottomBorder(BorderStyleValues.Thin, System.Drawing.Color.LightGray);
+            stylNormal.SetRightBorder(BorderStyleValues.Thin, System.Drawing.Color.LightGray);
             LoadDropList();
         }
 
         private void LoadDropList()
         {
-            // the next four lines are for debug - they get yesterday's forms. When using, comment out the fifth line
-            string day = ((Convert.ToInt32(DateTime.Now.Day)) - 1).ToString();
-            string month = DateTime.Now.Month.ToString();
-            string year = DateTime.Now.Year.ToString();
-            dm.DateEntered = month + "/" + day + "/" + year;
-            //        dm.DateEntered = DateTime.Now.ToShortDateString();
+            //10/24/18 is a good example of multiple instances of the same form
+            // the next four lines are for debug - they get yesterday's forms. When using, comment out the fifth line            
+            //string day = ((Convert.ToInt32(DateTime.Now.Day)) - 1).ToString();
+            //string month = DateTime.Now.Month.ToString();
+            //string year = DateTime.Now.Year.ToString();
+            //dm.DateEntered = month + "/" + day + "/" + year;
+            dm.DateEntered = DateTime.Now.ToShortDateString();
             dm.GetDropList();
             foreach (string prefix in dm.Results)
             {
@@ -166,9 +168,9 @@ namespace eProcBackUp
         {
             // 200|DeptName~OR PROSTHESIS`200|cc~7021`200|Deliver-to~EA209`200|
             //Sect#|label~label text`end of field marker|kabel~ etc.
-            int indx = 0;
+          //  int indx = 0;
             int hdrColCount = 0;
-            string extension = "";
+           // string extension = "";
             string[] firstPass = controls.Split("|".ToCharArray());
             string[] field;
             string fieldOfOne = "";
@@ -216,13 +218,14 @@ namespace eProcBackUp
         private void SetColHeaders()
         {
             int colNo = 3;       // changed from colNo = 1 to colNo = 3
-            string extension = "";
+           // string extension = "";
             try
             {                //set the col headers
                 if (entryNumber != currentEntryNum)
                 {
                     useHeader1 = !useHeader1;  //change the header color
-                    rowNo++; //changing header styles means changing to a new form number so add an extra blank row
+                    if(rowNo > 1)
+                        rowNo++; //changing header styles means changing to a new form number so add an extra blank row
                 }
                 foreach (string colName in ColHeaders)
                 {
